@@ -1,6 +1,17 @@
 @Order.Service_HostAddress = http://localhost:5138
 
-GET {{Order.Service_HostAddress}}/weatherforecast/
+GET {{Order.Service_HostAddress}}/order/
 Accept: application/json
+
+### Create order
+
+POST {{Order.Service_HostAddress}}/api/orders/
+Accept: application/json
+Content-Type: application/json
+
+{
+  "customerName": "Jocke",
+  "amount": 200.0
+}
 
 ###

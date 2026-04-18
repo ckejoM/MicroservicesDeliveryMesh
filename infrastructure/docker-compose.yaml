@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  # RabbitMQ: The message broker (The "Nervous System")
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: mesh-rabbitmq
+    ports:
+      - "5672:5672"   # AMQP protocol
+      - "15672:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  # PostgreSQL for Order.Service
+  order-db:
+    image: postgres:latest
+    container_name: order-db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: order_db
+    ports:
+      - "5433:5432" # Mapping to 5433 to avoid local conflicts
+
+  # PostgreSQL for Delivery.Service
+  delivery-db:
+    image: postgres:latest
+    container_name: delivery-db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: delivery_db
+    ports:
+      - "5434:5432" # Mapping to 5434 for independence

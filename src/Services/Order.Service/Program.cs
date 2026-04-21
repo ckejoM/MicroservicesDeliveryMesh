@@ -1,6 +1,9 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Order.Service.Data;
+using Shared.Contracts;
+using Wolverine;
+using Wolverine.RabbitMQ;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,16 +12,16 @@ builder.Services.AddOpenApi();
 builder.Services.AddDbContext<OrderDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddMassTransit(x =>
+builder.Host.UseWolverine(opts =>
 {
-    x.UsingRabbitMq((context, cfg) =>
-    {
-        cfg.Host("localhost", "/", h =>
+    var rabbit = opts.UseRabbitMq(new Uri("amqp://guest:guest@localhost:5672"))
+    .AutoProvision();
+
+    opts.PublishMessage<OrderCreatedEvent>()
+        .ToRabbitRoutingKey("orders-exchange", "order.created", config =>
         {
-            h.Username("guest");
-            h.Password("guest");
+            config.ExchangeType = ExchangeType.Topic;
         });
-    });
 });
 
 builder.Services.AddControllers();

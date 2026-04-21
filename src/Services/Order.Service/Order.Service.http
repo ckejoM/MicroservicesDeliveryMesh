@@ -10,8 +10,8 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "customerName": "Jocke",
-  "amount": 200.0
+  "customerName": "Pera",
+  "amount": 200
 }
 
 ###

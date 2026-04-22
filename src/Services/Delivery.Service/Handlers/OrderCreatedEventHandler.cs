@@ -1,11 +1,13 @@
 ﻿using Delivery.Service.Data;
 using Delivery.Service.Models;
 using Shared.Contracts;
+using Wolverine;
 
 namespace Delivery.Service.Handlers;
 public sealed class OrderCreatedEventHandler
     (DeliveryDbContext dbContext,
-    ILogger<OrderCreatedEventHandler> logger)
+    ILogger<OrderCreatedEventHandler> logger,
+    IMessageBus bus)
 {
     public async Task Handle(OrderCreatedEvent orderCreatedEvent)
     {
@@ -27,6 +29,11 @@ public sealed class OrderCreatedEventHandler
 
         logger.LogInformation("Delivery allocated for Order {OrderId}", orderCreatedEvent.OrderId);
 
-        // In the next commit, we will publish IDeliveryAllocated here!
+        await bus.PublishAsync(new DeliveryAllocatedEvent(
+            orderCreatedEvent.OrderId,
+            delivery.CourierName,
+            DateTime.UtcNow));
+
+        logger.LogInformation("Sent DeliveryAllocatedEvent for Order {OrderId}", orderCreatedEvent.OrderId);
     }
 }

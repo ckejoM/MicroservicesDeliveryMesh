@@ -1,5 +1,6 @@
 using Delivery.Service.Data;
 using Microsoft.EntityFrameworkCore;
+using Shared.Contracts;
 using Wolverine;
 using Wolverine.RabbitMQ;
 
@@ -31,6 +32,12 @@ builder.Host.UseWolverine(opts =>
 
     // 4. Setup the actual listener for that queue
     opts.ListenToRabbitQueue("delivery-service-inbox");
+
+    opts.PublishMessage<DeliveryAllocatedEvent>()
+        .ToRabbitRoutingKey("delivery-exchange", "delivery.allocated", config =>
+        {
+            config.ExchangeType = ExchangeType.Topic;
+        });
 });
 
 var app = builder.Build();

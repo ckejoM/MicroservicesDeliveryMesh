@@ -1,8 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Orchestrator.Service.Data;
+using Orchestrator.Service.Sagas;
+using Shared.Contracts;
 using Wolverine;
-using Wolverine.RabbitMQ;
 using Wolverine.Postgresql;
+using Wolverine.RabbitMQ;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +22,9 @@ builder.Host.UseWolverine(opts =>
 
     // PERSISTENCE: Tell Wolverine to store Saga state in our DbContext
     opts.PersistMessagesWithPostgresql(connectionString);
+
+    rabbit.DeclareExchange("orders-exchange", ex => ex.ExchangeType = ExchangeType.Topic);
+    rabbit.DeclareExchange("delivery-exchange", ex => ex.ExchangeType = ExchangeType.Topic);
 
     // INBOUND: Listen to Order Service
     opts.ListenToRabbitQueue("orchestrator-orders-inbox", config =>

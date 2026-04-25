@@ -1,14 +1,16 @@
 ﻿using Orchestrator.Service.Models;
 using Shared.Contracts;
 using Wolverine;
+using Wolverine.Persistence.Sagas;
 
 namespace Orchestrator.Service.Sagas;
 
-public sealed class OrderProcessSaga : Saga
+public class OrderProcessSaga : Saga
 {
+    public Guid Id { get; set; }
     // 1. START: Triggered by Order Service
     // Static Start methods tell Wolverine to create a NEW state record
-    public static OrderSaga Start(OrderCreatedEvent message, ILogger<OrderProcessSaga> logger)
+    public static OrderSaga Start([SagaIdentityFrom(nameof(OrderCreatedEvent.OrderId))] OrderCreatedEvent message, ILogger<OrderProcessSaga> logger)
     {
         logger.LogInformation("--- SAGA START: Order {OrderId} detected ---", message.OrderId);
 
@@ -23,7 +25,7 @@ public sealed class OrderProcessSaga : Saga
 
     // 2. UPDATE: Triggered by Delivery Service
     // Instance methods tell Wolverine to find the existing state by Id and update it
-    public void Handle(DeliveryAllocatedEvent message, OrderSaga state, ILogger<OrderProcessSaga> logger)
+    public void Handle([SagaIdentityFrom(nameof(OrderCreatedEvent.OrderId))] DeliveryAllocatedEvent message, OrderSaga state, ILogger<OrderProcessSaga> logger)
     {
         logger.LogInformation("--- SAGA UPDATE: Delivery confirmed for {OrderId} ---", message.OrderId);
 

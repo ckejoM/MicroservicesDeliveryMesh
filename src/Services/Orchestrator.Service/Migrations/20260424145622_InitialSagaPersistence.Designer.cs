@@ -12,7 +12,7 @@ using Orchestrator.Service.Data;
 namespace Orchestrator.Service.Migrations
 {
     [DbContext(typeof(OrchestratorDbContext))]
-    [Migration("20260422143111_InitialSagaPersistence")]
+    [Migration("20260424145622_InitialSagaPersistence")]
     partial class InitialSagaPersistence
     {
         /// <inheritdoc />

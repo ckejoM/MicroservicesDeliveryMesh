@@ -1,0 +1,17 @@
+@Gateway_HostAddress = http://localhost:5000
+
+GET {{Gateway_HostAddress}}/api/orders/
+Accept: application/json
+
+### Create order
+
+POST {{Gateway_HostAddress}}/api/orders/
+Accept: application/json
+Content-Type: application/json
+
+{
+  "customerName": "Jovan Madzic",
+  "totalAmount": 250.00
+}
+
+###
